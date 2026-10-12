@@ -9,13 +9,17 @@
 <meta property="og:description" content="رستم، رخش و هفت خوانِ پرماجرا — رایگان در کافه‌بازار">
 <meta property="og:image" content="assets/keyart.webp">
 <meta name="theme-color" content="#47aba9">
-<link rel="icon" href="assets/icon.webp">
+<link rel="icon" href="assets/icon_96.webp">
+<!-- the hero first: the island and the sign start loading before the stylesheet and script are read -->
+<link rel="preload" as="image" href="assets/island_hero.webp" fetchpriority="high">
+<link rel="preload" as="image" href="assets/logo.webp">
+<link rel="preload" as="font" type="font/woff2" href="assets/Vazirmatn-Black.woff2" crossorigin>
 <style>
-  @font-face { font-family: Vazir; src: url(assets/Vazirmatn-Regular.ttf); font-weight: 400; font-display: swap; }
-  @font-face { font-family: Vazir; src: url(assets/Vazirmatn-Bold.ttf); font-weight: 700; font-display: swap; }
-  @font-face { font-family: Vazir; src: url(assets/Vazirmatn-Black.ttf); font-weight: 900; font-display: swap; }
-  @font-face { font-family: Lilita; src: url(assets/LilitaOne-Regular.ttf); font-display: swap; }
-  @font-face { font-family: Fredoka; src: url(assets/Fredoka-SemiBold.ttf); font-display: swap; }
+  @font-face { font-family: Vazir; src: url(assets/Vazirmatn-Regular.woff2) format("woff2"); font-weight: 400; font-display: swap; }
+  @font-face { font-family: Vazir; src: url(assets/Vazirmatn-Bold.woff2) format("woff2"); font-weight: 700; font-display: swap; }
+  @font-face { font-family: Vazir; src: url(assets/Vazirmatn-Black.woff2) format("woff2"); font-weight: 900; font-display: swap; }
+  @font-face { font-family: Lilita; src: url(assets/LilitaOne-Regular.woff2) format("woff2"); font-display: swap; }
+  @font-face { font-family: Fredoka; src: url(assets/Fredoka-SemiBold.woff2) format("woff2"); font-display: swap; }
 
   :root {
     --sea: #47aba9;            /* the game's water (and the Tiny Swords page's) */
@@ -259,7 +263,7 @@
 <div class="sky" id="sky"></div>
 
 <div class="top">
-  <a class="brand" href="#"><img src="assets/icon.webp" alt=""><span data-en="Haft Khan">هفت‌خوان رستم</span></a>
+  <a class="brand" href="#"><img src="assets/icon_96.webp" alt="" width="40" height="40"><span data-en="Haft Khan">هفت‌خوان رستم</span></a>
   <nav>
     <a href="#heroes" data-en="Heroes">قهرمان‌ها</a>
     <a href="#khans" data-en="Seven trials">هفت خوان</a>
@@ -278,7 +282,7 @@
   <img class="sign px" src="assets/logo.webp" data-en-src="assets/logo_en.webp" alt="">
   <div class="wrap">
     <div class="world" id="heroWorld">
-      <img class="land" src="assets/island_hero.webp" alt="" width="2280" height="1013">
+      <img class="land" src="assets/island_hero.webp" alt="" width="2280" height="1013" fetchpriority="high">
     </div>
   </div>
   <div class="cta-row">
@@ -304,7 +308,7 @@
   <div class="wrap">
     <h2 class="ribbon" data-en="Seven trials, seven lands">هفت خوان، هفت سرزمین</h2>
     <p class="lead" data-en="From Zabol to the White Div's icy cave. Tap a trial on the map.">از زابل تا غار یخی دیو سپید. روی هر خوان در نقشه بزن.</p>
-    <div class="journey" id="journey"><img class="land" src="assets/map_journey.webp" alt="" width="2800" height="549"></div>
+    <div class="journey" id="journey"><img class="land" src="assets/map_journey.webp" loading="lazy" decoding="async" alt="" width="2800" height="549"></div>
     <article class="khan-card">
       <img id="kImg" alt="">
       <div class="txt">
@@ -363,7 +367,7 @@
 <section class="finale reveal">
   <div class="wrap">
     <h2 class="ribbon" data-en="The White Div is waiting…">دیو سپید منتظر است…</h2>
-    <div class="world" id="snowWorld"><img class="land" src="assets/island_snow.webp" alt="" width="1856" height="893"></div>
+    <div class="world" id="snowWorld"><img class="land" src="assets/island_snow.webp" loading="lazy" decoding="async" alt="" width="1856" height="893"></div>
     <div class="cta-row" style="margin-top:18px">
       <a class="btn bazaar" href="#" target="_blank" rel="noopener"><img class="basket" src="assets/bazaar_basket.webp" alt=""><span><span data-en="Get it on Cafe Bazaar">دانلود از کافه‌بازار</span><small data-en="Free · Android">رایگان · اندروید</small></span></a>
     </div>
@@ -398,6 +402,7 @@ function populate(world, picW, picH, x0, y0, spots) {
     const footX = flip ? m.w - m.footX : m.footX;
     const img = document.createElement("img");
     img.className = "sprite px" + (flip ? " flip" : "");
+    if (world.id !== "heroWorld") { img.loading = "lazy"; img.decoding = "async"; }
     img.src = `assets/anim/${name}.webp`; img.alt = "";
     img.style.left = (fx - footX) / picW * 100 + "%";
     img.style.top = (fy - m.footY) / picH * 100 + "%";
@@ -454,8 +459,8 @@ function unit(name, ped, scale = 1, flip = false) {
   u.style.height = `calc(${ph + top}px * ${k})`;
   const cx = Math.max(pw, m.w) / 2;
   const footX = flip ? m.w - m.footX : m.footX;
-  u.innerHTML = `<img class="ped px" src="assets/ped_${ped}.webp" alt="" style="width:calc(${pw}px * ${k}); left:calc(${cx - pw / 2}px * ${k})">` +
-    `<img class="sprite px${flip ? " flip" : ""}" src="assets/anim/${name}.webp" alt="" style="width:calc(${m.w}px * ${k}); left:calc(${cx - footX}px * ${k}); top:calc(${top + foot - m.footY}px * ${k})">`;
+  u.innerHTML = `<img class="ped px" src="assets/ped_${ped}.webp" loading="lazy" decoding="async" alt="" style="width:calc(${pw}px * ${k}); left:calc(${cx - pw / 2}px * ${k})">` +
+    `<img class="sprite px${flip ? " flip" : ""}" src="assets/anim/${name}.webp" loading="lazy" decoding="async" alt="" style="width:calc(${m.w}px * ${k}); left:calc(${cx - footX}px * ${k}); top:calc(${top + foot - m.footY}px * ${k})">`;
   return u;
 }
 
