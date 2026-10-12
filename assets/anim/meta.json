@@ -1,0 +1,128 @@
+{
+ "rostam": {
+  "w": 198,
+  "h": 214,
+  "footX": 96,
+  "footY": 214
+ },
+ "rakhsh": {
+  "w": 396,
+  "h": 318,
+  "footX": 202,
+  "footY": 318
+ },
+ "zal": {
+  "w": 152,
+  "h": 172,
+  "footX": 62,
+  "footY": 172
+ },
+ "pari": {
+  "w": 126,
+  "h": 170,
+  "footX": 58,
+  "footY": 170
+ },
+ "olad": {
+  "w": 196,
+  "h": 180,
+  "footX": 88,
+  "footY": 180
+ },
+ "kavus": {
+  "w": 118,
+  "h": 160,
+  "footX": 50,
+  "footY": 160
+ },
+ "villager": {
+  "w": 110,
+  "h": 152,
+  "footX": 52,
+  "footY": 152
+ },
+ "villager2": {
+  "w": 104,
+  "h": 126,
+  "footX": 42,
+  "footY": 126
+ },
+ "sheep": {
+  "w": 90,
+  "h": 88,
+  "footX": 46,
+  "footY": 88
+ },
+ "ram": {
+  "w": 201,
+  "h": 204,
+  "footX": 105,
+  "footY": 204
+ },
+ "soldier": {
+  "w": 168,
+  "h": 178,
+  "footX": 74,
+  "footY": 178
+ },
+ "div_red": {
+  "w": 182,
+  "h": 170,
+  "footX": 72,
+  "footY": 170
+ },
+ "div_purple": {
+  "w": 182,
+  "h": 170,
+  "footX": 72,
+  "footY": 170
+ },
+ "divcaptain": {
+  "w": 264,
+  "h": 246,
+  "footX": 104,
+  "footY": 246
+ },
+ "lion": {
+  "w": 352,
+  "h": 316,
+  "footX": 160,
+  "footY": 316
+ },
+ "dragon": {
+  "w": 428,
+  "h": 334,
+  "footX": 172,
+  "footY": 334
+ },
+ "witchfair": {
+  "w": 148,
+  "h": 176,
+  "footX": 58,
+  "footY": 176
+ },
+ "witch": {
+  "w": 142,
+  "h": 212,
+  "footX": 50,
+  "footY": 212
+ },
+ "arzhang": {
+  "w": 312,
+  "h": 318,
+  "footX": 168,
+  "footY": 318
+ },
+ "whitediv": {
+  "w": 472,
+  "h": 404,
+  "footX": 230,
+  "footY": 404
+ },
+ "coin": {
+  "w": 67,
+  "h": 70,
+  "footX": 34,
+  "footY": 70
+ }
+}

@@ -1,0 +1,640 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>هفت‌خوان رستم — بازی ماجرایی و خنده‌دار شاهنامه</title>
+<meta name="description" content="رستم، رخش و هفت خوانِ پرماجرا: یک بازی پیکسلی ماجرایی و خنده‌دار بر پایهٔ شاهنامهٔ فردوسی. رایگان در کافه‌بازار.">
+<meta property="og:title" content="هفت‌خوان رستم">
+<meta property="og:description" content="رستم، رخش و هفت خوانِ پرماجرا — رایگان در کافه‌بازار">
+<meta property="og:image" content="assets/keyart.webp">
+<meta name="theme-color" content="#47aba9">
+<link rel="icon" href="assets/icon.webp">
+<style>
+  @font-face { font-family: Vazir; src: url(assets/Vazirmatn-Regular.ttf); font-weight: 400; font-display: swap; }
+  @font-face { font-family: Vazir; src: url(assets/Vazirmatn-Bold.ttf); font-weight: 700; font-display: swap; }
+  @font-face { font-family: Vazir; src: url(assets/Vazirmatn-Black.ttf); font-weight: 900; font-display: swap; }
+  @font-face { font-family: Lilita; src: url(assets/LilitaOne-Regular.ttf); font-display: swap; }
+  @font-face { font-family: Fredoka; src: url(assets/Fredoka-SemiBold.ttf); font-display: swap; }
+
+  :root {
+    --sea: #47aba9;            /* the game's water (and the Tiny Swords page's) */
+    --ink: #3b2a17;
+    --ink-soft: #6b5032;
+    --navy: #161c2e;
+    --gold: #f7c948;
+    --paper: #f6e7c1;
+    --s: .62;                  /* how big the pixel world is drawn (1 = 128 px a tile) */
+    --text-font: Vazir, Tahoma, sans-serif;
+    --title-font: Vazir, Tahoma, sans-serif;
+  }
+  html[lang="en"] { --text-font: Fredoka, "Trebuchet MS", sans-serif; --title-font: Lilita, Fredoka, sans-serif; }
+  @media (max-width: 640px) { :root { --s: .46; } }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0; color: #fff; font-family: var(--text-font); line-height: 1.85; overflow-x: hidden;
+    background-color: var(--sea);
+    /* little white wave marks drifting on the sea, like the game's foam */
+    background-image:
+      radial-gradient(ellipse 26px 3px at 18% 22%, rgba(255,255,255,.35), transparent 70%),
+      radial-gradient(ellipse 18px 3px at 64% 58%, rgba(255,255,255,.28), transparent 70%),
+      radial-gradient(ellipse 22px 3px at 38% 86%, rgba(255,255,255,.25), transparent 70%),
+      radial-gradient(ellipse 14px 2px at 86% 14%, rgba(255,255,255,.3), transparent 70%);
+    background-size: 420px 300px; animation: sea 40s linear infinite;
+  }
+  @keyframes sea { to { background-position: 420px 0; } }
+  img { display: block; max-width: 100%; }
+  .px { image-rendering: pixelated; image-rendering: crisp-edges; }
+  a { color: inherit; }
+  .wrap { max-width: 1160px; margin: 0 auto; padding: 0 18px; }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+  /* ------------------------------------------------------------ top chips */
+  /* ------------------------------------------------------------ the header: name, sections, Bazaar, language */
+  .top { position: sticky; top: 0; z-index: 50; display: flex; align-items: center; gap: 14px; padding: 9px 22px;
+         background: rgba(22, 28, 46, .72); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); box-shadow: 0 4px 0 rgba(0,0,0,.12); }
+  .top .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: #fff; font: 900 20px var(--title-font); }
+  .top .brand img { width: 40px; height: 40px; border-radius: 10px; box-shadow: 0 2px 0 rgba(0,0,0,.35); }
+  .top nav { display: flex; gap: 4px; margin-inline-start: 10px; flex: 1; }
+  .top nav a { color: #fff; text-decoration: none; font: 700 15px var(--text-font); padding: 4px 11px; border-radius: 8px; opacity: .92; }
+  .top nav a:hover { background: rgba(255,255,255,.14); opacity: 1; }
+  .chip { display: inline-flex; align-items: center; gap: 7px; padding: 6px 14px; border-radius: 9px; background: var(--paper);
+          color: var(--navy); font: 900 14px var(--text-font); text-decoration: none; border: 2px solid var(--navy); cursor: pointer; box-shadow: 0 3px 0 rgba(0,0,0,.25); }
+  .chip:hover { transform: translateY(-1px); }
+  .chip img { width: 20px; height: 20px; }
+  .chip.gold { background: linear-gradient(#ffe48a, #f2b93b); color: #5a2d00; border-color: #5a2d00; }
+  .chip.gold img { filter: drop-shadow(0 1px 0 rgba(90,45,0,.35)); }
+  .chip:active { transform: translateY(2px); box-shadow: 0 1px 0 rgba(0,0,0,.25); }
+  .top .brand span { white-space: nowrap; }
+  @media (max-width: 820px) { .top nav { display: none; } .top { justify-content: space-between; gap: 8px; padding: 8px 12px; } .top .brand { flex: 1; font-size: 17px; } }
+  @media (max-width: 360px) { .top .brand span { display: none; } }
+
+  /* ------------------------------------------------------------ clouds drifting by as the page scrolls */
+  .sky { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+  .sky img { position: absolute; opacity: .9; will-change: transform; filter: drop-shadow(0 18px 0 rgba(22,60,70,.12)); }
+  body > header, body > section, body > footer { position: relative; z-index: 1; }
+
+  /* ------------------------------------------------------------ the pixel world: islands, pedestals, characters */
+  .world { position: relative; }
+  .world > .land { width: 100%; height: auto; }
+  .sprite { position: absolute; max-width: none; height: auto; pointer-events: none; }
+  .sprite.flip { transform: scaleX(-1); }
+  .unit { position: relative; flex: none; }
+  .unit .ped { position: absolute; left: 0; bottom: 0; max-width: none; }
+
+  /* ------------------------------------------------------------ buttons and labels from the game's kit */
+  .btn { display: inline-flex; align-items: center; justify-content: center; text-decoration: none; cursor: pointer; border: 0 solid transparent;
+         border-width: 18px 34px 26px; border-image: url(assets/btn_gold.webp) 36 64 52 64 fill / 18px 34px 26px stretch; color: #5a2d00;
+         font: 900 clamp(20px, 2.6vw, 27px) var(--title-font); line-height: 1.2; text-align: center; filter: drop-shadow(0 8px 10px rgba(0,0,0,.28)); transition: transform .12s; }
+  .btn:hover { transform: translateY(-3px) scale(1.04); }
+  .btn:active { transform: translateY(3px) scale(.98); filter: drop-shadow(0 3px 4px rgba(0,0,0,.28)); }
+  .btn:hover .basket { animation: wiggle .5s ease-in-out; }
+  @keyframes wiggle { 25% { transform: rotate(-14deg) scale(1.1); } 60% { transform: rotate(10deg); } }
+  /* a light sweeps across the big gold buttons now and then */
+  .btn { position: relative; overflow: hidden; }
+  .btn::after { content: ""; position: absolute; top: -40%; bottom: -40%; width: 36px; left: -60px; transform: rotate(20deg);
+                background: rgba(255,255,255,.5); animation: shine 3.6s ease-in-out infinite; pointer-events: none; }
+  @keyframes shine { 0%, 55% { left: -60px; } 85%, 100% { left: 110%; } }
+  .btn .basket { width: 1.75em; height: 1.75em; margin-inline-end: 12px; filter: drop-shadow(0 2px 0 rgba(90,45,0,.25)); }
+  .btn small { display: block; font: 700 13px var(--text-font); opacity: .75; margin-top: 2px; }
+  .ribbon { display: table; margin: 0 auto 6px; padding: 12px 84px 26px; border-image: url(assets/ribbon_red.webp) 20 110 40 110 fill / 20px 84px 40px 84px stretch;
+            color: #fff; font: 900 clamp(24px, 3.4vw, 36px) var(--title-font); line-height: 1.25; text-align: center; white-space: nowrap;
+            text-shadow: 0 3px 0 #5a1a14, 2px 0 0 #5a1a14, -2px 0 0 #5a1a14, 0 -2px 0 #5a1a14; filter: drop-shadow(0 6px 4px rgba(0,0,0,.18)); }
+  .ribbon.blue { border-image-source: url(assets/ribbon_blue.webp); text-shadow: 0 3px 0 #13324a, 2px 0 0 #13324a, -2px 0 0 #13324a, 0 -2px 0 #13324a; }
+  .lead { max-width: 720px; margin: 4px auto 0; text-align: center; font-size: 18px; text-shadow: 0 2px 0 rgba(0,0,0,.18); }
+  section { padding: 96px 0 10px; }
+
+  /* ------------------------------------------------------------ hero */
+  .hero { padding: 0; }
+  .hero .world { max-width: 1180px; margin: 26px auto 0; }
+  .hero .sign { display: block; width: min(560px, 62%); margin: 42px auto 0; filter: drop-shadow(0 10px 8px rgba(0,0,0,.3)); animation: sway 5s ease-in-out infinite; transform-origin: 50% 0; position: relative; z-index: 3; }
+  @keyframes sway { 50% { transform: rotate(-1.6deg) translateY(4px); } }
+  .cta-row { display: flex; justify-content: center; margin-top: 8px; position: relative; z-index: 2; }
+  .tagline { max-width: 780px; margin: 16px auto 0; padding: 0 18px; text-align: center; font: 900 clamp(19px, 2.4vw, 25px) var(--title-font); text-shadow: 0 2px 0 rgba(0,0,0,.22); }
+  .badges { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 12px; }
+  .badges span { background: rgba(22,28,46,.6); font: 700 14.5px var(--text-font); padding: 3px 13px; border-radius: 7px; }
+
+  /* ------------------------------------------------------------ cast cards: the painted portrait + the pixel self on its tile */
+  .cast { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 26px 20px; margin-top: 30px; }
+  .card { position: relative; color: var(--ink); background: var(--paper); border: 4px solid var(--navy); border-radius: 22px; overflow: hidden;
+          box-shadow: 0 9px 0 rgba(0,0,0,.2); transition: transform .2s, box-shadow .2s; display: flex; flex-direction: column; }
+  .card { transform-style: preserve-3d; will-change: transform; }
+  .card:hover { box-shadow: 0 15px 0 rgba(0,0,0,.18); }
+  .card .stand .sprite { transition: transform .25s cubic-bezier(.3,1.8,.5,1); }
+  .card:hover .stand .sprite { transform: translateY(-14px); }
+  .card:hover .stand .sprite.flip { transform: translateY(-14px) scaleX(-1); }
+  /* the pixel folk on the islands: tap or point at one and they say something */
+  .world .sprite.talk { pointer-events: auto; cursor: pointer; transition: filter .2s; }
+  .world .sprite.talk:hover { filter: drop-shadow(0 0 6px #fff) brightness(1.08); }
+  .hop { animation: hop .45s cubic-bezier(.3,1.6,.5,1); }
+  .hop.flip { animation: hopflip .45s cubic-bezier(.3,1.6,.5,1); }
+  @keyframes hop { 40% { translate: 0 -18%; } }
+  @keyframes hopflip { 40% { translate: 0 -18%; } }
+  .bubble { position: absolute; z-index: 5000; transform: translate(-50%, -100%); background: #fff; color: var(--ink); font: 900 clamp(12px, 1.3vw, 16px) var(--title-font);
+            padding: 6px 12px; border-radius: 14px; border: 3px solid var(--navy); white-space: nowrap; pointer-events: none; box-shadow: 0 4px 0 rgba(0,0,0,.18);
+            animation: pop .25s cubic-bezier(.3,1.8,.5,1); }
+  .bubble::after { content: ""; position: absolute; left: 50%; bottom: -11px; margin-left: -8px; border: 8px solid transparent; border-top-color: var(--navy); border-bottom: 0; }
+  .bubble.out { animation: fade .3s forwards; }
+  @keyframes pop { from { transform: translate(-50%, -80%) scale(.4); opacity: 0; } }
+  @keyframes fade { to { opacity: 0; transform: translate(-50%, -120%); } }
+  /* a splash where the sea is tapped */
+  .ripple { position: absolute; z-index: 0; width: 70px; height: 22px; margin: -11px 0 0 -35px; border: 3px solid rgba(255,255,255,.75); border-radius: 50%;
+            pointer-events: none; animation: ripple .9s ease-out forwards; }
+  @keyframes ripple { from { transform: scale(.2); opacity: 1; } to { transform: scale(2.4); opacity: 0; } }
+  /* Rostam runs along the header as the page scrolls */
+  .runner { position: absolute; bottom: -14px; height: 34px; image-rendering: pixelated; pointer-events: none; transition: left .15s linear; }
+  .runner-track { position: absolute; left: 0; right: 0; bottom: 0; height: 4px; }
+  .runner-track i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, #f7c948, #ffe48a); }
+  /* titles pop in like the game's banners */
+  .reveal.on .ribbon { animation: banner .6s cubic-bezier(.3,1.6,.5,1) both; }
+  @keyframes banner { from { transform: scale(.6) rotate(-4deg); opacity: 0; } }
+  .medal { cursor: pointer; }
+  .medal.got img { animation: got .6s cubic-bezier(.3,1.8,.5,1); }
+  @keyframes got { 40% { transform: scale(1.35) rotate(12deg); } }
+  .spark { position: fixed; z-index: 100; width: 10px; height: 10px; border-radius: 50%; background: #ffe48a; box-shadow: 0 0 8px #fff3b0; pointer-events: none; animation: spark .7s ease-out forwards; }
+  @keyframes spark { to { transform: translate(var(--dx), var(--dy)) scale(.2); opacity: 0; } }
+  .journey .pin::after { content: attr(data-name); position: absolute; left: 50%; top: 100%; transform: translate(-50%, 4px); white-space: nowrap; background: var(--navy);
+                         color: #fff; font: 700 13px var(--text-font); padding: 2px 9px; border-radius: 6px; opacity: 0; pointer-events: none; transition: .15s; text-shadow: none; }
+  .journey .pin:hover::after, .journey .pin.on::after { opacity: 1; }
+  .journey .pin:hover { transform: translate(-50%, -50%) scale(1.2); }
+  .khan-card .fade { animation: kfade .4s ease-out; }
+  @keyframes kfade { from { opacity: 0; transform: translateY(8px); } }
+  .shots button img { transition: transform .4s; }
+  .shots button:hover img { transform: scale(1.04); }
+  .card .art { position: relative; height: 270px; background: radial-gradient(circle at 50% 62%, #fff7d8 0, #f7d98e 38%, #e7a858 70%, #c97a3c 100%); overflow: hidden; }
+  .card.foe .art { background: radial-gradient(circle at 50% 62%, #f3d6ff 0, #b98ad9 36%, #6e4a9e 70%, #3c2a63 100%); }
+  .card .art::before { content: ""; position: absolute; inset: -40%; background: repeating-conic-gradient(from 0deg, rgba(255,255,255,.18) 0 9deg, transparent 9deg 22deg); animation: spin 40s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .card .art img { position: relative; height: 100%; width: 100%; object-fit: contain; object-position: center bottom; filter: drop-shadow(0 10px 8px rgba(0,0,0,.25)); transition: transform .3s; }
+  .card:hover .art img { transform: scale(1.05); }
+  .card .body { position: relative; padding: 14px 18px 0; flex: 1; display: flex; flex-direction: column; }
+  .card h3 { margin: 0; font: 900 25px var(--title-font); line-height: 1.3; }
+  .card .role { color: #b8433a; font: 900 14px var(--title-font); }
+  .card.foe .role { color: #6e4a9e; }
+  .card p { margin: 4px 0 8px; font-size: 15.5px; color: var(--ink-soft); }
+  .card .stand { margin: auto -18px 0; display: flex; justify-content: center; align-items: flex-end; padding-top: 6px; background: linear-gradient(rgba(71,171,169,0), rgba(71,171,169,.9) 60%); }
+
+  /* ------------------------------------------------------------ the journey */
+  .journey { position: relative; margin: 26px -18px 0; }
+  .journey .land { width: 100%; height: auto; }
+  .journey .pin { position: absolute; transform: translate(-50%, -50%); width: clamp(30px, 3.8vw, 54px); aspect-ratio: 1; border: 0; padding: 0 0 4px; cursor: pointer;
+                  background: url(assets/round_blue.webp) center / contain no-repeat; color: #fff; font: 900 clamp(13px, 1.7vw, 22px) var(--title-font);
+                  text-shadow: 0 2px 0 rgba(0,0,0,.45); transition: transform .2s; animation: bob 2.4s ease-in-out infinite; }
+  .journey .pin:nth-of-type(2n) { animation-delay: -1.2s; }
+  .journey .pin.on { background-image: url(assets/round_red.webp); transform: translate(-50%, -50%) scale(1.3); }
+  @keyframes bob { 50% { margin-top: -5px; } }
+  .khan-card { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 0 26px; margin-top: 22px; padding: 18px; color: var(--ink);
+               background: var(--paper); border: 4px solid var(--navy); border-radius: 22px; box-shadow: 0 9px 0 rgba(0,0,0,.2); }
+  .khan-card > img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 14px; border: 3px solid var(--navy); }
+  .khan-card .txt { display: flex; flex-direction: column; padding-top: 4px; }
+  .khan-card .n { color: #b8433a; font: 900 15px var(--title-font); }
+  .khan-card h3 { margin: 2px 0 6px; font: 900 clamp(24px, 3vw, 32px) var(--title-font); line-height: 1.3; }
+  .khan-card p { margin: 0 0 8px; font-size: 16.5px; color: var(--ink-soft); }
+  .khan-card .who { margin-top: auto; display: flex; justify-content: center; align-items: flex-end; gap: 6px; border-radius: 14px; background: linear-gradient(rgba(71,171,169,0), rgba(71,171,169,.85) 55%); }
+  .khan-nav { display: flex; justify-content: center; gap: 12px; margin-top: 16px; }
+  .khan-nav button { border: 0; background: rgba(22,28,46,.7); color: #fff; font: 700 15px var(--text-font); padding: 7px 18px; border-radius: 8px; cursor: pointer; box-shadow: 0 3px 0 rgba(0,0,0,.2); }
+  .khan-nav button:hover { background: rgba(22,28,46,.95); }
+
+  /* ------------------------------------------------------------ screenshots */
+  .shots { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; margin-top: 28px; }
+  .shots button { padding: 0; border: 4px solid var(--navy); border-radius: 16px; overflow: hidden; cursor: zoom-in; background: var(--navy); box-shadow: 0 9px 0 rgba(0,0,0,.2); transition: transform .2s; }
+  .shots button:hover { transform: translateY(-5px); }
+  .shots img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+  dialog { border: 0; padding: 0; background: transparent; max-width: 96vw; }
+  dialog::backdrop { background: rgba(10, 14, 24, .86); }
+  dialog img { max-height: 88vh; border-radius: 14px; border: 4px solid var(--gold); cursor: zoom-out; }
+
+  /* ------------------------------------------------------------ modes */
+  .modes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px; margin-top: 30px; }
+  .mode { color: var(--ink); text-align: center; background: var(--paper); border: 4px solid var(--navy); border-radius: 22px; padding: 18px 18px 20px; box-shadow: 0 9px 0 rgba(0,0,0,.2); }
+  .mode .stage { display: flex; justify-content: center; align-items: flex-end; gap: 0; min-height: 170px; border-radius: 14px; background: linear-gradient(#cfeceb, var(--sea) 70%); padding-top: 10px; overflow: hidden; }
+  .mode h3 { margin: 12px 0 2px; font: 900 24px var(--title-font); }
+  .mode p { margin: 0; font-size: 15.5px; color: var(--ink-soft); }
+
+  /* ------------------------------------------------------------ medals */
+  .medals { display: flex; flex-wrap: wrap; justify-content: center; gap: 22px 14px; margin-top: 30px; }
+  .medal { width: 160px; text-align: center; outline: none; }
+  .medal img { width: 132px; height: 132px; margin: 0 auto; filter: drop-shadow(0 8px 5px rgba(0,0,0,.25)); transition: transform .3s; }
+  .medal:hover img, .medal:focus img { transform: scale(1.12) rotate(-8deg); }
+  .medal b { display: block; margin-top: 4px; font: 900 16px var(--title-font); text-shadow: 0 2px 0 rgba(0,0,0,.25); }
+  .medal span { display: block; font-size: 13.5px; opacity: .92; line-height: 1.5; }
+
+  /* ------------------------------------------------------------ finale */
+  .finale .world { max-width: 900px; margin: 90px auto 0; }   /* (room for the White Div, who towers over his island) */
+
+  footer { margin-top: 70px; background: var(--navy); color: #c9d1e2; text-align: center; padding: 30px 18px 38px; font-size: 14.5px; }
+  footer p { margin: 5px 0; }
+  footer a { color: var(--gold); }
+
+  .reveal { opacity: 0; transform: translateY(26px); transition: opacity .7s, transform .7s; }
+  .reveal.on { opacity: 1; transform: none; }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } .reveal { opacity: 1; transform: none; } }
+
+  @media (max-width: 900px) { .modes { grid-template-columns: 1fr; } .khan-card { grid-template-columns: 1fr; } .khan-card .txt { padding-top: 14px; } }
+  @media (max-width: 640px) {
+    .hero .sign { width: 82%; margin-top: 28px; animation: none; }
+    /* the phone sees the main island up close (the divs' islet waits off to the side) */
+    .hero .wrap { padding: 0; overflow: hidden; direction: ltr; }
+    .hero .world { width: 158%; margin-left: -6%; }
+    .ribbon { padding: 10px 56px 22px; border-image-width: 16px 56px 34px 56px; white-space: normal; }
+    .shots { grid-template-columns: 1fr; }
+    .cast { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 12px; }
+    .card .art { height: 180px; }
+    .card h3 { font-size: 20px; }
+    .card p { font-size: 13.5px; }
+    .card .body { padding: 10px 12px 0; }
+    .card .stand { margin: auto -12px 0; }
+    .medal { width: calc(33% - 10px); }
+    .medal img { width: 92px; height: 92px; }
+    .medal span { display: none; }
+    .journey { margin: 18px -12px 0; }
+    .btn { border-width: 14px 26px 22px; border-image-width: 14px 26px 22px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="sky" id="sky"></div>
+
+<div class="top">
+  <a class="brand" href="#"><img src="assets/icon.webp" alt=""><span data-en="Haft Khan">هفت‌خوان رستم</span></a>
+  <nav>
+    <a href="#heroes" data-en="Heroes">قهرمان‌ها</a>
+    <a href="#khans" data-en="Seven trials">هفت خوان</a>
+    <a href="#foes" data-en="Enemies">دشمن‌ها</a>
+    <a href="#shots" data-en="Screenshots">تصاویر</a>
+  </nav>
+  <a class="chip gold bazaar" href="#" target="_blank" rel="noopener"><img src="assets/bazaar_basket.webp" alt=""> <span data-en="Download">دانلود</span></a>
+  <button class="chip" id="lang" aria-label="Language">EN</button>
+  <div class="runner-track"><i id="progress"></i></div>
+  <img class="runner" id="runner" src="assets/anim/rostam.webp" alt="">
+</div>
+
+<!-- ============================================================ hero: a small island of Zabol -->
+<header class="hero">
+  <h1 class="sr" data-en="Haft Khan">هفت‌خوان رستم</h1>
+  <img class="sign px" src="assets/logo.webp" data-en-src="assets/logo_en.webp" alt="">
+  <div class="wrap">
+    <div class="world" id="heroWorld">
+      <img class="land" src="assets/island_hero.webp" alt="" width="2280" height="1013">
+    </div>
+  </div>
+  <div class="cta-row">
+    <a class="btn bazaar" href="#" target="_blank" rel="noopener"><img class="basket" src="assets/bazaar_basket.webp" alt=""><span><span data-en="Get it on Cafe Bazaar">دانلود از کافه‌بازار</span><small data-en="Free · Android">رایگان · اندروید</small></span></a>
+  </div>
+  <p class="tagline" data-en="A funny pixel adventure from Ferdowsi's Shahnameh: Rostam, his grumpy horse Rakhsh, and seven wild trials.">یک ماجرای پیکسلی و خنده‌دار از شاهنامهٔ فردوسی؛ رستم، اسبِ غرغرویش رخش و هفت خوانِ پرماجرا.</p>
+  <div class="badges">
+    <span data-en="Free">رایگان</span><span data-en="Persian & English">فارسی و انگلیسی</span><span data-en="Plays offline">آفلاین</span><span data-en="For all ages">برای همهٔ سنین</span>
+  </div>
+</header>
+
+<!-- ============================================================ heroes -->
+<section class="reveal">
+  <div class="wrap">
+    <h2 class="ribbon blue" data-en="The heroes">قهرمان‌ها</h2>
+    <p class="lead" data-en="King Kavus is chained by the White Div. Rostam takes the short road to save him — the one with seven deadly trials — and Rakhsh grumbles all the way.">کاووس‌شاه در بند دیو سپید است. رستم برای نجاتش راه کوتاه را انتخاب می‌کند؛ همان راهی که هفت خوانِ پرخطر دارد. رخش هم تمام راه غر می‌زند.</p>
+    <div class="cast" id="heroes" style="scroll-margin-top:200px"></div>
+  </div>
+</section>
+
+<!-- ============================================================ the seven khans -->
+<section class="reveal" id="khans" style="scroll-margin-top:40px">
+  <div class="wrap">
+    <h2 class="ribbon" data-en="Seven trials, seven lands">هفت خوان، هفت سرزمین</h2>
+    <p class="lead" data-en="From Zabol to the White Div's icy cave. Tap a trial on the map.">از زابل تا غار یخی دیو سپید. روی هر خوان در نقشه بزن.</p>
+    <div class="journey" id="journey"><img class="land" src="assets/map_journey.webp" alt="" width="2800" height="549"></div>
+    <article class="khan-card">
+      <img id="kImg" alt="">
+      <div class="txt">
+        <div class="n" id="kNum"></div>
+        <h3 id="kName"></h3>
+        <p id="kText"></p>
+        <div class="who" id="kWho"></div>
+      </div>
+    </article>
+    <div class="khan-nav">
+      <button id="kPrev" data-en="‹ Previous">› قبلی</button>
+      <button id="kNext" data-en="Next ›">بعدی ‹</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ enemies -->
+<section class="reveal">
+  <div class="wrap">
+    <h2 class="ribbon" data-en="The enemies">دشمن‌ها</h2>
+    <p class="lead" data-en="Divs that talk too much, a hungry lion, a dragon that vanishes, a witch with two faces — and the White Div himself.">دیوهایی که زیادی حرف می‌زنند، شیری گرسنه، اژدهایی که غیب می‌شود، جادوگری دوچهره و خودِ دیو سپید.</p>
+    <div class="cast" id="foes" style="scroll-margin-top:200px"></div>
+  </div>
+</section>
+
+<!-- ============================================================ screenshots -->
+<section class="reveal">
+  <div class="wrap">
+    <h2 class="ribbon blue" data-en="Screenshots">تصاویر بازی</h2>
+    <div class="shots" id="shots" style="scroll-margin-top:200px"></div>
+  </div>
+</section>
+
+<!-- ============================================================ more to play -->
+<section class="reveal">
+  <div class="wrap">
+    <h2 class="ribbon" data-en="More to play">بیشتر از یک سفر</h2>
+    <div class="modes">
+      <div class="mode"><div class="stage" id="mode1"></div><h3 data-en="Hero mode">حالت پهلوانی</h3><p data-en="Story done? The seven trials again, with angrier divs, twins and three challenges in every khan.">داستان تمام شد؟ هفت خوان دوباره، با دیوهای عصبانی‌تر، دوقلوها و سه چالش در هر خوان.</p></div>
+      <div class="mode"><div class="stage" id="mode2"></div><h3 data-en="The Arena">میدان نبرد</h3><p data-en="Wave after wave of divs, a captain every five waves, and a new twist every day.">موج پشت موج دیو، هر پنج موج یک سردار و هر روز یک چالش تازه.</p></div>
+      <div class="mode"><div class="stage" id="mode3"></div><h3 data-en="Granny Golnar's bazaar">بازار ننه گلنار</h3><p data-en="Heavier maces, armour, magic doogh, Simurgh feathers, royal outfits — and a gift from Tahmineh every day.">گرز سنگین‌تر، زره، دوغ جادویی، پر سیمرغ و تن‌پوش شاهانه؛ و هر روز هدیه‌ای از تهمینه.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ medals -->
+<section class="reveal">
+  <div class="wrap">
+    <h2 class="ribbon blue" data-en="Medals to win">نشان‌های افتخار</h2>
+    <p class="lead" data-en="Every trial, every secret and every silly thing you do has a medal.">هر خوان، هر راز و هر کار بامزه‌ای که بکنی، یک نشان دارد.</p>
+    <div class="medals" id="medals"></div>
+  </div>
+</section>
+
+<!-- ============================================================ the end -->
+<section class="finale reveal">
+  <div class="wrap">
+    <h2 class="ribbon" data-en="The White Div is waiting…">دیو سپید منتظر است…</h2>
+    <div class="world" id="snowWorld"><img class="land" src="assets/island_snow.webp" alt="" width="1856" height="893"></div>
+    <div class="cta-row" style="margin-top:18px">
+      <a class="btn bazaar" href="#" target="_blank" rel="noopener"><img class="basket" src="assets/bazaar_basket.webp" alt=""><span><span data-en="Get it on Cafe Bazaar">دانلود از کافه‌بازار</span><small data-en="Free · Android">رایگان · اندروید</small></span></a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p data-en="Haft Khan — based on Ferdowsi's Shahnameh.">هفت‌خوان رستم — بر پایهٔ شاهنامهٔ فردوسی.</p>
+  <p data-en="Pixel art: Tiny Swords by Pixel Frog · Fonts: Vazirmatn, Lilita One, Fredoka">طراحی پیکسلی: Tiny Swords از Pixel Frog · قلم‌ها: وزیرمتن، Lilita One و Fredoka</p>
+  <p><a href="privacy.html" data-en="Privacy">حریم خصوصی</a></p>
+</footer>
+
+<dialog id="zoom"><img id="zoomImg" alt=""></dialog>
+
+<script>
+const BAZAAR = "https://cafebazaar.ir/app/com.haftkhan.game";   // the package name is fixed for ever
+document.querySelectorAll(".bazaar").forEach(a => a.href = BAZAAR);
+const $ = id => document.getElementById(id);
+const isEn = () => document.documentElement.lang === "en";
+const num = n => isEn() ? String(n) : String(n).replace(/\d/g, d => "۰۱۲۳۴۵۶۷۸۹"[d]);
+const T = 128;   // a tile, in the pictures' own pixels (sprites are drawn at the same scale)
+
+(async () => {
+const META = await (await fetch("assets/anim/meta.json")).json();
+
+// ------------------------------------------------------------- characters standing on tiles of an island picture
+// spot = [sprite, column, row, flip]: the feet on the middle of that map tile
+function populate(world, picW, picH, x0, y0, spots) {
+  for (const [name, col, row, flip] of spots) {
+    const m = META[name];
+    const fx = (col + 1) * T + T / 2 - x0, fy = (row + 1) * T + T * .72 - y0;
+    const footX = flip ? m.w - m.footX : m.footX;
+    const img = document.createElement("img");
+    img.className = "sprite px" + (flip ? " flip" : "");
+    img.src = `assets/anim/${name}.webp`; img.alt = "";
+    img.style.left = (fx - footX) / picW * 100 + "%";
+    img.style.top = (fy - m.footY) / picH * 100 + "%";
+    img.style.width = m.w / picW * 100 + "%";
+    img.style.zIndex = Math.round(fy);
+    if (LINES[name]) { img.classList.add("talk"); img.addEventListener("click", e => { e.stopPropagation(); say(world, img, name); }); img.addEventListener("mouseenter", () => say(world, img, name)); }
+    world.append(img);
+  }
+}
+// what each one says when tapped (Persian, English) — a pick at random
+const LINES = {
+  rostam: [["کباب کجاست؟!", "Where's the kebab?!"], ["هفت خوان؟ آسونه!", "Seven trials? Easy!"], ["گرزم کو؟", "Where's my mace?"]],
+  rakhsh: [["باز راه کوتاه؟!", "The short road again?!"], ["من فقط علف می‌خوام", "I just want grass"], ["هی‌هی‌هی!", "Neigh-hee-hee!"]],
+  zal: [["پسرم، مراقب باش!", "Careful, my son!"], ["دیوها شرق‌اند", "The divs are east"]],
+  pari: [["اول دیوها رو بیرون کن!", "Chase the divs out first!"], ["هی‌هی!", "Hee-hee!"]],
+  sheep: [["بع‌ع‌ع!", "Baa!"], ["بع؟", "Baa?"]],
+  villager2: [["من هم پهلوونم!", "I'm a hero too!"], ["رستم! امضا بده!", "Rostam! Autograph!"]],
+  div_red: [["وای! رستمه!", "Uh-oh, it's Rostam!"], ["مامااان!", "Mommy!"]],
+  div_purple: [["کی گفت رستم امروز نمیاد؟!", "Who said Rostam wasn't coming?!"], ["فرار… نه، حمله!", "Run… no, attack!"]],
+  divcaptain: [["جمع شید بچه‌ها!", "Gather round, lads!"], ["من سردارم!", "I'm the captain!"]],
+  whitediv: [["خُرررر…", "Zzzz…"], ["کی منو بیدار کرد؟!", "Who woke me up?!"]],
+  kavus: [["رستم! بالاخره!", "Rostam! At last!"]],
+};
+function say(world, img, name) {
+  world.querySelectorAll(".bubble").forEach(b => b.remove());
+  const list = LINES[name]; if (!list) return;
+  const [fa, en] = list[Math.floor(Math.random() * list.length)];
+  const b = document.createElement("div");
+  b.className = "bubble"; b.textContent = isEn() ? en : fa;
+  b.style.left = (parseFloat(img.style.left) + parseFloat(img.style.width) / 2) + "%";
+  b.style.top = img.style.top;
+  world.append(b);
+  img.classList.remove("hop"); void img.offsetWidth; img.classList.add("hop");
+  setTimeout(() => { b.classList.add("out"); setTimeout(() => b.remove(), 300); }, 1800);
+}
+populate($("heroWorld"), 2280, 1013, 1.5 * T, 1.4 * T, [
+  ["pari", 2.7, 2.1], ["zal", 6.2, 1.9], ["sheep", 3.4, 6.3], ["sheep", 5.0, 7.0],
+  ["villager2", 9.2, 3.8], ["rostam", 7.1, 5.2], ["rakhsh", 9.0, 6.4],
+  ["div_red", 15.6, 3.7, true], ["div_purple", 16.7, 4.8, true], ["divcaptain", 15.9, 6.0, true],
+]);
+populate($("snowWorld"), 1856, 893, 1.5 * T, 1.4 * T, [
+  ["whitediv", 5.1, 1.7, true], ["rostam", 3.2, 4.8], ["kavus", 8.6, 4.4, true],
+]);
+
+// ------------------------------------------------------------- one character on its own pedestal (1–3 tiles, grass or rock)
+function unit(name, ped, scale = 1, flip = false) {
+  const m = META[name];
+  const pw = { 1: 168, 2: 296, 3: 424 }[ped.slice(-1)], ph = 322, foot = 30 + T * .62;
+  const k = `var(--s) * ${scale}`;
+  const top = Math.max(0, m.footY - foot);          // how far the character rises above the pedestal picture
+  const u = document.createElement("div");
+  u.className = "unit";
+  u.style.width = `calc(${Math.max(pw, m.w)}px * ${k})`;
+  u.style.height = `calc(${ph + top}px * ${k})`;
+  const cx = Math.max(pw, m.w) / 2;
+  const footX = flip ? m.w - m.footX : m.footX;
+  u.innerHTML = `<img class="ped px" src="assets/ped_${ped}.webp" alt="" style="width:calc(${pw}px * ${k}); left:calc(${cx - pw / 2}px * ${k})">` +
+    `<img class="sprite px${flip ? " flip" : ""}" src="assets/anim/${name}.webp" alt="" style="width:calc(${m.w}px * ${k}); left:calc(${cx - footX}px * ${k}); top:calc(${top + foot - m.footY}px * ${k})">`;
+  return u;
+}
+
+// ------------------------------------------------------------- the cast: painted portrait + the pixel self on its tile
+const heroes = [
+  ["rostam_proud", "rostam", "grass1", "رستم", "Rostam", "جهان‌پهلوان", "The champion", "زورمند، نترس و همیشه گرسنهٔ کباب.", "Strong, brave and always hungry for kebab."],
+  ["rakhsh", "rakhsh", "grass2", "رخش", "Rakhsh", "اسب رستم", "Rostam's horse", "باهوش‌ترین اسب ایران و غرغروترینش.", "The cleverest horse in Iran, and the grumpiest."],
+  ["zal", "zal", "grass1", "زال", "Zal", "پدر رستم", "Rostam's father", "سفیدمو و دانا؛ راه هفت خوان را نشان می‌دهد.", "White-haired and wise; he shows the way."],
+  ["tahmineh", "coin", "grass1", "تهمینه", "Tahmineh", "شاهزادهٔ سمنگان", "Princess of Samangan", "هر روز برای رستم هدیه می‌آورد.", "Brings Rostam a gift every day."],
+  ["pari", "pari", "grass1", "پری", "Pari", "دختر زابل", "A girl of Zabol", "شیطون و خندان؛ اول باید دیوها را بیرون کنی!", "Cheeky and smiling — first, chase the divs out!"],
+  ["granny", "villager", "grass1", "ننه گلنار", "Granny Golnar", "صاحب بازار شهر", "Runs the town bazaar", "گرز رستم پیش اوست… تا وقتی کمکش کنی.", "She has Rostam's mace… until you help her."],
+  ["olad", "olad", "grass1", "اولاد", "Olad", "راهنمای دست‌بسته", "A guide on a rope", "رخش گندم‌هایش را خورد؛ حالا باید راه را نشان بدهد.", "Rakhsh ate his wheat; now he shows the way."],
+  ["kavus", "kavus", "grass1", "کاووس‌شاه", "King Kavus", "شاهِ دربند", "The chained king", "اسیر دیو سپید؛ رستم برای او این‌همه راه می‌آید.", "The White Div's prisoner — the reason for it all."],
+];
+const foes = [
+  ["div", "div_red", "rock1", "دیو", "Div", "سرباز دیوها", "A div soldier", "حرف زیاد، زور کم. همیشه گله‌ای می‌آید.", "All talk, little muscle. Comes in crowds."],
+  ["div_captain", "divcaptain", "rock2", "سردار دیو", "Div captain", "فرمانده", "The commander", "صدایش از خودش بزرگ‌تر است.", "Louder than he looks."],
+  ["lion", "lion", "rock2", "شیر بیشه", "The lion", "خوان یکم", "Trial one", "گرسنه، خیلی گرسنه. رخش باید جلویش بایستد.", "Hungry. Very hungry. Rakhsh must stop him."],
+  ["dragon", "dragon", "rock3", "اژدها", "The dragon", "خوان سوم", "Trial three", "هر بار نگاهش کنی، غیب می‌شود!", "Vanishes every time you look."],
+  ["witch_fair", "witchfair", "rock1", "بانوی زیبا", "The lovely lady", "خوان چهارم", "Trial four", "ساز می‌زند و سفره می‌چیند… مشکوک است.", "Plays the lute, lays a feast… suspicious."],
+  ["witch_true", "witch", "rock1", "زن جادو", "The witch", "چهرهٔ واقعی", "Her true face", "این همان بانوی زیباست. گول نخور!", "That lovely lady, unmasked. Don't be fooled!"],
+  ["arzhang", "arzhang", "rock2", "ارژنگ دیو", "Arzhang", "خوان ششم", "Trial six", "سردار لشکر دیوها با طبل‌های جنگ.", "Captain of the div army, with war drums."],
+  ["white_div", "whitediv", "rock3", "دیو سپید", "The White Div", "خوان هفتم", "Trial seven", "غول آخر، در غار یخی. خوابش سبک است!", "The final boss, in an icy cave. Light sleeper!"],
+];
+function cast(el, list, foe) {
+  for (const [art, px, ped, n, nEn, r, rEn, d, dEn] of list) {
+    const c = document.createElement("article");
+    c.className = "card" + (foe ? " foe" : "");
+    c.innerHTML = `<div class="art"><img loading="lazy" src="assets/side_${art}.webp" alt="${n}"></div>
+      <div class="body"><div class="role" data-en="${rEn}">${r}</div><h3 data-en="${nEn}">${n}</h3><p data-en="${dEn}">${d}</p><div class="stand"></div></div>`;
+    c.querySelector(".stand").append(unit(px, ped, ped.endsWith("3") ? .58 : ped.endsWith("2") ? .72 : .9, foe));
+    el.append(c);
+  }
+}
+cast($("heroes"), heroes, false);
+cast($("foes"), foes, true);
+
+// ------------------------------------------------------------- modes
+$("mode1").append(unit("rostam", "grass1"), unit("whitediv", "rock3", .6, true));
+$("mode2").append(unit("div_red", "rock1", .82), unit("rostam", "grass1", .82), unit("divcaptain", "rock2", .6, true));
+$("mode3").append(unit("villager", "grass1"), unit("coin", "grass1"));
+
+// ------------------------------------------------------------- the journey (Zabol on the right, the White Div on the left — as in the game)
+const pins = [[91.7,57.5],[79.9,37.5],[69.1,57.5],[57.4,37.5],[46.6,57.5],[34.8,37.5],[23.0,57.5],[12.3,37.5]];
+const khans = [
+  ["title_0_zabol", "پیش‌درآمد", "Prologue", "زابل", "Zabol", "دیوها تا زابل آمده‌اند و ننه گلنار گرز رستم را گرو برداشته! اول باید زابل را پاک کنی.", "Divs have reached Zabol, and Granny Golnar is holding Rostam's mace for ransom. Clear the town first!", [["rostam","grass1"],["div_red","rock1",true]]],
+  ["title_1_thicket", "خوان یکم", "Trial one", "بیشهٔ شیر", "The Lion's Thicket", "رستم کنار آتش خوابش برده و این رخش است که باید از دست شیر و دزدهای کباب نجاتش بدهد.", "Rostam fell asleep by the fire — Rakhsh must save him from the lion and the kebab thieves.", [["rakhsh","grass2"],["lion","rock2",true]]],
+  ["title_2_desert", "خوان دوم", "Trial two", "بیابان بی‌آب", "The Waterless Desert", "تشنگی امان رستم را بریده؛ فقط یک میش جادویی راه چشمه را بلد است.", "Dying of thirst — only a magic ram knows the way to the spring.", [["rostam","grass1"],["ram","grass2",true]]],
+  ["title_3_dragon", "خوان سوم", "Trial three", "درهٔ اژدها", "The Dragon's Valley", "اژدهایی که هر بار رخش نگاهش می‌کند، غیب می‌شود! رخش باید بیدار بماند.", "A dragon that vanishes every time Rakhsh looks at it. Stay awake!", [["rakhsh","grass2"],["dragon","rock3",true]]],
+  ["title_4_witch", "خوان چهارم", "Trial four", "زن جادو", "The Witch", "سفره‌ای رنگین و بانویی زیبا که ساز می‌زند… و شاید آن‌قدرها هم زیبا نباشد.", "A lovely feast and a lady playing the lute… who might not be so lovely after all.", [["witchfair","rock1"],["witch","rock1",true]]],
+  ["title_5_olad", "خوان پنجم", "Trial five", "اولاد", "Olad", "رخش گندم‌های اولاد را خورده! حالا اولاد با کمند باید راهنمای رستم شود.", "Rakhsh ate Olad's wheat — now Olad, on a rope, has to be Rostam's guide.", [["rostam","grass1"],["olad","grass1",true]]],
+  ["title_6_arzhang", "خوان ششم", "Trial six", "ارژنگ دیو", "Arzhang the Div", "طبل‌های جنگ، اردوگاه دیوها و سرداری که از همه بلندتر داد می‌زند.", "War drums, a div camp, and a captain who shouts louder than anyone.", [["rostam","grass1"],["arzhang","rock2",true]]],
+  ["title_7_white_div", "خوان هفتم", "Trial seven", "دیو سپید", "The White Div", "غار یخی، دیو سپیدِ خواب‌آلود و آزادی کاووس‌شاه. نبرد آخر!", "An icy cave, a sleepy White Div and King Kavus to free. The final fight!", [["rostam","grass1"],["whitediv","rock3",true]]],
+];
+const journey = $("journey");
+pins.forEach(([x, y], i) => {
+  const b = document.createElement("button");
+  b.className = "pin"; b.style.left = x + "%"; b.style.top = y + "%";
+  b.onclick = () => showKhan(i);
+  journey.append(b);
+});
+let current = 0;
+function showKhan(i) {
+  current = (i + khans.length) % khans.length;
+  const [img, n, nEn, t, tEn, d, dEn, who] = khans[current], en = isEn();
+  $("kImg").src = `assets/${img}.webp`;
+  for (const el of [$("kImg"), $("kName"), $("kText"), $("kWho")]) { el.classList.remove("fade"); void el.offsetWidth; el.classList.add("fade"); }
+  $("kNum").textContent = en ? nEn : n;
+  $("kName").textContent = en ? tEn : t;
+  $("kText").textContent = en ? dEn : d;
+  $("kWho").replaceChildren(...who.map(([s, p, f]) => unit(s, p, p.endsWith("3") ? .62 : p.endsWith("2") ? .78 : .9, !!f)));
+  journey.querySelectorAll(".pin").forEach((p, k) => p.classList.toggle("on", k === current));
+}
+$("kPrev").onclick = () => showKhan(current - 1);
+$("kNext").onclick = () => showKhan(current + 1);
+let tour = setInterval(() => showKhan(current + 1), 5500);
+["click", "touchstart"].forEach(ev => $("khans").addEventListener(ev, () => clearInterval(tour), { once: true }));
+
+// ------------------------------------------------------------- screenshots
+const shotList = [2, 3, 4, 5, 7, 8];
+function fillShots() {
+  const lang = isEn() ? "en" : "fa";
+  $("shots").innerHTML = shotList.map(i => `<button aria-label="zoom"><img loading="lazy" src="assets/shot_${lang}_${String(i).padStart(2, "0")}.webp" alt=""></button>`).join("");
+  $("shots").querySelectorAll("button").forEach(b => b.onclick = () => { $("zoomImg").src = b.querySelector("img").src; $("zoom").showModal(); });
+}
+$("zoom").onclick = () => $("zoom").close();
+
+// ------------------------------------------------------------- medals (names from the game itself)
+const MEDALS = await (await fetch("assets/medals.json")).json();
+$("medals").innerHTML = MEDALS.map(m => `<div class="medal" tabindex="0"><img loading="lazy" src="assets/${m.id}.webp" alt=""><b data-en="${m.en}">${m.fa}</b><span data-en="${m.enText}">${m.faText}</span></div>`).join("");
+
+// ------------------------------------------------------------- language: Persian in the page, English in data-en
+function setLang(en) {
+  const texts = [...document.querySelectorAll("[data-en]")];
+  texts.forEach(e => { if (e.dataset.fa === undefined) e.dataset.fa = e.textContent; });
+  document.documentElement.lang = en ? "en" : "fa";
+  document.documentElement.dir = en ? "ltr" : "rtl";
+  texts.forEach(e => e.textContent = en ? e.dataset.en : e.dataset.fa);
+  document.querySelectorAll("[data-en-src]").forEach(i => { i.dataset.faSrc ??= i.getAttribute("src"); i.src = en ? i.dataset.enSrc : i.dataset.faSrc; });
+  document.title = en ? "Haft Khan — a funny Shahnameh pixel adventure" : "هفت‌خوان رستم — بازی ماجرایی و خنده‌دار شاهنامه";
+  $("lang").textContent = en ? "فا" : "EN";
+  journey.querySelectorAll(".pin").forEach((p, k) => { p.textContent = k === 0 ? (en ? "P" : "پ") : num(k); p.dataset.name = en ? khans[k][4] : khans[k][3]; });
+  showKhan(current); fillShots();
+  try { localStorage.setItem("hk_lang", en ? "en" : "fa"); } catch (_) {}
+}
+$("lang").onclick = () => setLang(!isEn());
+let saved = null; try { saved = localStorage.getItem("hk_lang"); } catch (_) {}
+setLang(saved === "en");
+
+// ------------------------------------------------------------- clouds: each drifts sideways on its own and slides by at its own speed as the page scrolls
+const sky = $("sky"), clouds = [];
+const cloudSpots = [[1, 6, 8, .35, 1], [5, 70, 22, .55, .9], [2, 30, 48, .25, .8], [6, 84, 70, .45, .85], [3, 12, 92, .7, .7],
+                    [7, 55, 118, .3, .75], [8, 90, 140, .6, .7], [4, 40, 165, .4, .8], [2, 8, 190, .5, .8], [1, 68, 210, .32, .9]];
+for (const [n, x, y, speed, size] of cloudSpots) {
+  const img = document.createElement("img");
+  img.src = `assets/cloud_${n}.webp`; img.alt = "";
+  img.style.left = x + "%"; img.style.width = `calc(${size} * min(32vw, 420px) * ${n <= 2 || n === 5 ? 1 : .55})`;
+  sky.append(img);
+  clouds.push({ img, y, speed, drift: Math.random() * 1000, x });
+}
+function moveClouds() {
+  const h = innerHeight, t = performance.now() / 1000;
+  for (const c of clouds) {
+    // their place on the page (vh), sliding up faster or slower than the page itself, wrapping round
+    let y = (c.y * h / 100 - scrollY * c.speed) % (h * 2.2);
+    if (y < -200) y += h * 2.2;
+    const dx = Math.sin((t + c.drift) / 9) * 40;
+    c.img.style.transform = `translate(${dx}px, ${y}px)`;
+  }
+  requestAnimationFrame(moveClouds);
+}
+if (!matchMedia("(prefers-reduced-motion: reduce)").matches) moveClouds();
+else clouds.forEach(c => c.img.style.top = c.y + "vh");
+
+// cards lean toward the pointer
+document.querySelectorAll(".card").forEach(c => {
+  c.addEventListener("pointermove", e => {
+    const r = c.getBoundingClientRect(), x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5;
+    c.style.transform = `perspective(700px) rotateY(${x * 10}deg) rotateX(${-y * 8}deg) translateY(-6px)`;
+  });
+  c.addEventListener("pointerleave", () => c.style.transform = "");
+});
+// medals: a little burst of sparkles when tapped
+function sparkle(x, y, n = 12) {
+  for (let i = 0; i < n; i++) {
+    const s = document.createElement("i"); s.className = "spark";
+    const a = Math.PI * 2 * i / n, d = 40 + Math.random() * 40;
+    s.style.left = x + "px"; s.style.top = y + "px";
+    s.style.setProperty("--dx", Math.cos(a) * d + "px"); s.style.setProperty("--dy", Math.sin(a) * d + "px");
+    document.body.append(s); setTimeout(() => s.remove(), 750);
+  }
+}
+$("medals").addEventListener("click", e => {
+  const m = e.target.closest(".medal"); if (!m) return;
+  m.classList.remove("got"); void m.offsetWidth; m.classList.add("got");
+  const r = m.querySelector("img").getBoundingClientRect(); sparkle(r.left + r.width / 2, r.top + r.height / 2);
+});
+// a splash where the sea itself is tapped
+document.addEventListener("click", e => {
+  if (e.target.closest("a, button, .card, .khan-card, .mode, .medal, .shots, .world .sprite, .top, img.land, dialog")) return;
+  const r = document.createElement("i"); r.className = "ripple";
+  r.style.left = e.pageX + "px"; r.style.top = e.pageY + "px";
+  document.body.append(r); setTimeout(() => r.remove(), 950);
+});
+// Rostam runs along the header as you read (and the gold line fills behind him)
+function runner() {
+  const max = document.documentElement.scrollHeight - innerHeight, k = max > 0 ? scrollY / max : 0;
+  const bar = document.querySelector(".top"), w = bar.clientWidth, me = $("runner");
+  const x = isEn() ? k * (w - 40) : (1 - k) * (w - 40);
+  me.style.left = x + "px";
+  me.style.transform = isEn() ? "" : "scaleX(-1)";
+  $("progress").style.width = k * 100 + "%";
+  $("progress").style.marginInlineStart = "0";
+}
+addEventListener("scroll", runner, { passive: true }); addEventListener("resize", runner); runner();
+
+const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add("on"); io.unobserve(e.target); } }), { threshold: .05 });
+document.querySelectorAll(".reveal").forEach(s => io.observe(s));
+})();
+</script>
+</body>
+</html>

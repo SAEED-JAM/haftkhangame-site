@@ -1,0 +1,107 @@
+[
+ {
+  "id": "ach_first_div",
+  "fa": "دیوکُش",
+  "en": "Div Slayer",
+  "faText": "اولین دیوت رو زدی!",
+  "enText": "You beat your first div!"
+ },
+ {
+  "id": "ach_mace",
+  "fa": "گرز به دست",
+  "en": "Mace in Hand",
+  "faText": "گرز گاوسر رو از ننه گلنار پس گرفتی",
+  "enText": "You got the ox-headed mace back from Granny Golnar"
+ },
+ {
+  "id": "ach_shepherd",
+  "fa": "چوپانِ پهلوان",
+  "en": "Hero Shepherd",
+  "faText": "سه برّهٔ گمشدهٔ بیژن رو پیدا کردی",
+  "enText": "You found Bijan's three lost lambs"
+ },
+ {
+  "id": "ach_kebab",
+  "fa": "کباب‌خوار",
+  "en": "Kebab Lover",
+  "faText": "ده تا کباب خوردی. نوش جون!",
+  "enText": "Ten kebabs eaten. Enjoy!"
+ },
+ {
+  "id": "ach_heartbreak",
+  "fa": "دل‌شکسته",
+  "en": "Heartbroken",
+  "faText": "پری فرار کرد… دفعهٔ بعد!",
+  "enText": "The pari ran away… next time!"
+ },
+ {
+  "id": "ach_lion",
+  "fa": "شیرشکارِ رخش",
+  "en": "Rakhsh the Lion Hunter",
+  "faText": "رخش شیر بیشه رو شکست داد",
+  "enText": "Rakhsh defeated the lion of the thicket"
+ },
+ {
+  "id": "ach_spring",
+  "fa": "تشنه‌لب",
+  "en": "Parched",
+  "faText": "به چشمهٔ بیابان رسیدی",
+  "enText": "You reached the desert spring"
+ },
+ {
+  "id": "ach_dragon",
+  "fa": "اژدهاکُش",
+  "en": "Dragon Slayer",
+  "faText": "اژدهای ناپیدا رو شکست دادی",
+  "enText": "You defeated the invisible dragon"
+ },
+ {
+  "id": "ach_witch",
+  "fa": "جادوشکن",
+  "en": "Spellbreaker",
+  "faText": "فریب زن جادو رو نخوردی (زیاد)",
+  "enText": "You didn't fall for the witch's trick (much)"
+ },
+ {
+  "id": "ach_olad",
+  "fa": "کمندانداز",
+  "en": "Lasso Master",
+  "faText": "اولاد رو با کمند گرفتی",
+  "enText": "You caught Olad with your lasso"
+ },
+ {
+  "id": "ach_arzhang",
+  "fa": "ارژنگ‌کُش",
+  "en": "Arzhang Slayer",
+  "faText": "سردار دیوها رو شکست دادی",
+  "enText": "You defeated the div commander"
+ },
+ {
+  "id": "ach_white_div",
+  "fa": "پایانِ دیو سپید",
+  "en": "The End of the White Div",
+  "faText": "هفت‌خوان تموم شد!",
+  "enText": "The Seven Labours are done!"
+ },
+ {
+  "id": "ach_coins",
+  "fa": "سکه‌باز",
+  "en": "Coin Hoarder",
+  "faText": "همهٔ سکه‌های یک خوان رو جمع کردی",
+  "enText": "You collected every coin in a khan"
+ },
+ {
+  "id": "ach_untouched",
+  "fa": "بی‌زخم",
+  "en": "Untouched",
+  "faText": "یک خوان رو با جان کامل تموم کردی",
+  "enText": "You finished a khan at full health"
+ },
+ {
+  "id": "ach_three_stars",
+  "fa": "سه‌ستاره",
+  "en": "Three Stars",
+  "faText": "سه ستارهٔ یک خوان رو گرفتی",
+  "enText": "You earned three stars in a khan"
+ }
+]
